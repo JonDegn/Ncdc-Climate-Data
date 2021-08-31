@@ -44,6 +44,11 @@ namespace NoaaNcdcClient
             return CallApi<StationsResponse>($"{baseUrl}{request.Endpoint}{request.GetQuery()}");
         }
 
+        public Station GetStation(string stationId)
+        {
+            return CallApi<Station>($"{baseUrl}stations/{Uri.EscapeDataString(stationId)}");
+        }
+
 
     }
 }

@@ -9,11 +9,41 @@ using Shouldly;
 
 namespace NoaaNcdcClientTests
 {
-    public class Tests
+    public class HistoricalWeatherClientUnitTests
     {
         [SetUp]
         public void Setup()
         {
+        }
+
+        [Test]
+        public void TestGetStation()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            var stationId = "GHCND:US1NCAG0001";
+
+            mockHttp
+                .When($"https://www.ncdc.noaa.gov/cdo-web/api/v2/station/*")
+                .Respond("application/geo+json", File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData/station.json")));
+
+            var client = new HistoricalWeatherClient(mockHttp.ToHttpClient(), "token", "user-agent");
+
+            var response = client.GetStation(stationId);
+
+            var expected = new Station
+            {
+                Elevation = 946.1,
+                MinDate = DateTime.Parse("2007-09-08"),
+                MaxDate = DateTime.Parse("2021-08-27"),
+                Latitude = 36.458975,
+                Name = "SPARTA 3.5 SSW, NC US",
+                DataCoverage = 0.9763,
+                Id = "GHCND:US1NCAG0001",
+                ElevationUnit = "METERS",
+                Longitude = -81.152517
+            };
+
+            response.ShouldBeEquivalentTo(expected);
         }
 
         [Test]
