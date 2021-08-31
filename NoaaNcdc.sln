@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31605.320
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoaaNcdcClient", "NoaaNcdcClient\NoaaNcdcClient.csproj", "{EB9B9653-1D01-459B-93BF-CAD1D6592AC7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoaaNcdcClientTests", "NoaaNcdcClientTests\NoaaNcdcClientTests.csproj", "{39B76432-9DEB-4AFF-A87A-A9E5497F0CAA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EB9B9653-1D01-459B-93BF-CAD1D6592AC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB9B9653-1D01-459B-93BF-CAD1D6592AC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB9B9653-1D01-459B-93BF-CAD1D6592AC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB9B9653-1D01-459B-93BF-CAD1D6592AC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39B76432-9DEB-4AFF-A87A-A9E5497F0CAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39B76432-9DEB-4AFF-A87A-A9E5497F0CAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39B76432-9DEB-4AFF-A87A-A9E5497F0CAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39B76432-9DEB-4AFF-A87A-A9E5497F0CAA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {83967AC0-908A-474C-A359-1A9259F590F9}
+	EndGlobalSection
+EndGlobal

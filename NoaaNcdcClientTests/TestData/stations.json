@@ -1,0 +1,22 @@
+﻿{
+  "metadata": {
+    "resultset": {
+      "offset": 1,
+      "count": 1,
+      "limit": 25
+    }
+  },
+  "results": [
+    {
+      "elevation": 946.1,
+      "mindate": "2007-09-08",
+      "maxdate": "2021-08-27",
+      "latitude": 36.458975,
+      "name": "SPARTA 3.5 SSW, NC US",
+      "datacoverage": 0.9763,
+      "id": "GHCND:US1NCAG0001",
+      "elevationUnit": "METERS",
+      "longitude": -81.152517
+    }
+  ]
+}
