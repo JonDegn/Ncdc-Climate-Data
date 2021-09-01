@@ -1,0 +1,15 @@
+﻿{
+  "metadata": {
+    "resultset": {
+      "offset": 1,
+      "count": 42,
+      "limit": 1
+    }
+  },
+  "results": [
+    {
+      "name": "Annual Agricultural",
+      "id": "ANNAGR"
+    }
+  ]
+}

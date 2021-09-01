@@ -1,0 +1,18 @@
+﻿{
+  "metadata": {
+    "resultset": {
+      "offset": 1,
+      "count": 59,
+      "limit": 1
+    }
+  },
+  "results": [
+    {
+      "mindate": "1763-01-01",
+      "maxdate": "2021-07-01",
+      "name": "Cooling Degree Days Season to Date",
+      "datacoverage": 1,
+      "id": "CDSD"
+    }
+  ]
+}

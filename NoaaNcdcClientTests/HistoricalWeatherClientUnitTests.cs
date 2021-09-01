@@ -155,6 +155,129 @@ namespace NoaaNcdcClientTests
         }
 
         [Test]
+        public void TestGetDataCategory()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            var dataCategoryId = "ANNAGR";
+
+            mockHttp
+                .When($"https://www.ncdc.noaa.gov/cdo-web/api/v2/datacategories/*")
+                .Respond("application/geo+json", File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData/datacategory.json")));
+
+            var client = new HistoricalWeatherClient(mockHttp.ToHttpClient(), "token", "user-agent");
+
+            var response = client.GetDataCategory(dataCategoryId);
+
+            var expected = new DataCategory
+            {
+                Name = "Annual Agricultural",
+                Id = dataCategoryId
+            };
+
+            response.ShouldBeEquivalentTo(expected);
+        }
+
+        [Test]
+        public void TestGetDataCategories()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp
+                .When($"https://www.ncdc.noaa.gov/cdo-web/api/v2/datacategories")
+                .Respond("application/geo+json", File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData/datacategories.json")));
+
+            var client = new HistoricalWeatherClient(mockHttp.ToHttpClient(), "token", "user-agent");
+
+            var response = client.GetDataCategories(new DataCategoriesRequest());
+
+            var expected = new ListResponse<DataCategory>
+            {
+                Metadata = new Metadata
+                {
+                    ResultSet = new ResultSet
+                    {
+                        Offset = 1,
+                        Count = 42,
+                        Limit = 1
+                    }
+                },
+                Results = new List<DataCategory>
+                {
+                     new DataCategory
+                     {
+                        Name = "Annual Agricultural",
+                        Id = "ANNAGR"
+                     }
+                }
+            };
+
+            response.ShouldBeEquivalentTo(expected);
+        }
+
+        [Test]
+        public void TestGetDataType()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            var dataTypeId = "ACMH";
+
+            mockHttp
+                .When($"https://www.ncdc.noaa.gov/cdo-web/api/v2/datatypes/*")
+                .Respond("application/geo+json", File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData/datatype.json")));
+
+            var client = new HistoricalWeatherClient(mockHttp.ToHttpClient(), "token", "user-agent");
+
+            var response = client.GetDataType(dataTypeId);
+
+            var expected = new DataType
+            {
+                MinDate = new DateTime(1965, 01, 01),
+                MaxDate = new DateTime(2005, 12, 31),
+                DataCoverage = 1,
+                Id = dataTypeId
+            };
+
+            response.ShouldBeEquivalentTo(expected);
+        }
+
+        [Test]
+        public void TestGetDataTypes()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp
+                .When($"https://www.ncdc.noaa.gov/cdo-web/api/v2/datatypes")
+                .Respond("application/geo+json", File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData/datatypes.json")));
+
+            var client = new HistoricalWeatherClient(mockHttp.ToHttpClient(), "token", "user-agent");
+
+            var response = client.GetDataTypes(new DataTypesRequest());
+
+            var expected = new ListResponse<DataType>
+            {
+                Metadata = new Metadata
+                {
+                    ResultSet = new ResultSet
+                    {
+                        Offset = 1,
+                        Count = 59,
+                        Limit = 1
+                    }
+                },
+                Results = new List<DataType>
+                {
+                     new DataType
+                     {
+                        MinDate = new DateTime(1763, 01, 01),
+                        MaxDate = new DateTime(2021, 07, 01),
+                        Name = "Cooling Degree Days Season to Date",
+                        DataCoverage = 1,
+                        Id = "CDSD"
+                     }
+                }
+            };
+
+            response.ShouldBeEquivalentTo(expected);
+        }
+
+        [Test]
         public void TestGetData()
         {
             var mockHttp = new MockHttpMessageHandler();

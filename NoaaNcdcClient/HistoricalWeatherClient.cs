@@ -59,6 +59,26 @@ namespace NoaaNcdcClient
             return CallApi<Dataset>($"{baseUrl}datasets/{Uri.EscapeDataString(datasetId)}");
         }
 
+        public ListResponse<DataCategory> GetDataCategories(DataCategoriesRequest request)
+        {
+            return CallApi<ListResponse<DataCategory>>($"{baseUrl}{request.Endpoint}{request.GetQuery()}");
+        }
+
+        public DataCategory GetDataCategory(string datasetId)
+        {
+            return CallApi<DataCategory>($"{baseUrl}datacategories/{Uri.EscapeDataString(datasetId)}");
+        }
+
+        public ListResponse<DataType> GetDataTypes(DataTypesRequest request)
+        {
+            return CallApi<ListResponse<DataType>>($"{baseUrl}{request.Endpoint}{request.GetQuery()}");
+        }
+
+        public DataType GetDataType(string dataTypeId)
+        {
+            return CallApi<DataType>($"{baseUrl}datatypes/{Uri.EscapeDataString(dataTypeId)}");
+        }
+
 
     }
 }
