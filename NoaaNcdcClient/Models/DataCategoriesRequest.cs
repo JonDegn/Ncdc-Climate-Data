@@ -1,93 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace NoaaNcdcClient.Models
+﻿namespace NoaaNcdcClient.Models
 {
-    public class DataCategoriesRequest
+    public class DataCategoriesRequest : ApiRequest<DataCategoriesRequest>
     {
-        public string Endpoint { get; } = "datacategories";
-        public string[] DatasetIds { get; private set; }
-        public string[] LocationIds { get; private set; }
-        public string[] StationIds { get; private set; }
-        public DateTime? StartDate { get; private set; }
-        public DateTime? EndDate { get; private set; }
-        public string SortField { get; private set; }
-        public SortOrder SortOrder { get; private set; }
-        public int Limit { get; private set; } = 25;
-        public int Offset { get; private set; }
+        public override string Endpoint { get; } = "datacategories";
 
-        public DataCategoriesRequest WithDatasets(params string[] dataTypeIds)
+        public DataCategoriesRequest WithDatasets(params string[] datasetIds)
         {
-            DatasetIds = dataTypeIds;
+            SetArrayParam("datasetid", datasetIds);
             return this;
         }
 
         public DataCategoriesRequest WithLocations(params string[] locationIds)
         {
-            LocationIds = locationIds;
+            SetArrayParam("locationid", locationIds);
             return this;
         }
 
         public DataCategoriesRequest WithStations(params string[] stationIds)
         {
-            StationIds = stationIds;
+            SetArrayParam("stationid", stationIds);
             return this;
         }
-
-        public DataCategoriesRequest WithStartDate(DateTime startDate)
-        {
-            StartDate = startDate;
-            return this;
-        }
-
-        public DataCategoriesRequest WithEndDate(DateTime endDate)
-        {
-            EndDate = endDate;
-            return this;
-        }
-
-        public DataCategoriesRequest WithSortField(string sortField)
-        {
-            SortField = sortField;
-            return this;
-        }
-
-        public DataCategoriesRequest WithSortOrder(SortOrder sortOrder)
-        {
-            SortOrder = sortOrder;
-            return this;
-        }
-
-        public DataCategoriesRequest WithLimit(int limit)
-        {
-            Limit = limit;
-            return this;
-        }
-
-        public DataCategoriesRequest WithOffset(int offset)
-        {
-            Offset = offset;
-            return this;
-        }
-
-        public string GetQuery()
-        {
-            var queryParams = new List<string>();
-            if (DatasetIds != null && DatasetIds.Length > 0) queryParams.Add(MakeQueryParamForArray("datasetid", DatasetIds));
-            if (LocationIds != null && LocationIds.Length > 0) queryParams.Add(MakeQueryParamForArray("locationid", LocationIds));
-            if (StationIds != null && StationIds.Length > 0) queryParams.Add(MakeQueryParamForArray("stationid", StationIds));
-            if (StartDate != null) queryParams.Add($"startdate={StartDate.Value.ToString("yyyy-MM-dd")}");
-            if (EndDate != null) queryParams.Add($"enddate={EndDate.Value.ToString("yyyy-MM-dd")}");
-            if (SortField != null) queryParams.Add($"sortfield={SortField}");
-            queryParams.Add($"sortorder={Enum.GetName(SortOrder)}");
-            queryParams.Add($"limit={Limit}");
-            queryParams.Add($"offset={Offset}");
-            return $"?{string.Join("&", queryParams)}";
-        }
-        private string MakeQueryParamForArray(string fieldName, string[] ids, char separator = '&')
-        {
-            return $"{fieldName}={Uri.EscapeDataString(string.Join(separator, ids))}";
-        }
-
     }
 }

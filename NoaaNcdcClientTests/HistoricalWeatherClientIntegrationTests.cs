@@ -69,8 +69,8 @@ namespace NoaaNcdcClientTests
                     new Station
                     {
                         Elevation= 2745.9,
-                        MinDate= DateTime.Parse("1978-09-30"),
-                        MaxDate= DateTime.Parse("2021-08-28"),
+                        MinDate= new DateTime(1978, 09, 30),
+                        MaxDate= new DateTime(2021, 08, 28),
                         Latitude= 39.45,
                         Name= "RED PINE RIDGE, UT US",
                         DataCoverage= 0.9955,
@@ -235,6 +235,55 @@ namespace NoaaNcdcClientTests
                         Name = "Cooling Degree Days Season to Date",
                         DataCoverage = 1,
                         Id = "CDSD"
+                     }
+                }
+            };
+
+            response.ShouldBeEquivalentTo(expected);
+        }
+
+        [Test]
+        public void TestGetLocationCategory()
+        {
+            var locationCategoryId = "CLIM_REG";
+
+            var client = new HistoricalWeatherClient(new System.Net.Http.HttpClient(), Configuration["NCDC:Token"], Configuration["NCDC:UserAgent"]);
+
+            var response = client.GetLocationCategory(locationCategoryId);
+
+            var expected = new LocationCategory
+            {
+                Name = "Climate Region",
+                Id = locationCategoryId
+            };
+
+            response.ShouldBeEquivalentTo(expected);
+        }
+
+        [Test]
+        public void TestGetLocationCategories()
+        {
+            var client = new HistoricalWeatherClient(new System.Net.Http.HttpClient(), Configuration["NCDC:Token"], Configuration["NCDC:UserAgent"]);
+
+            var response = client.GetLocationCategories(new LocationCategoriesRequest().WithLimit(1));
+
+            var expected = new ListResponse<LocationCategory>
+            {
+                Metadata = new Metadata
+                {
+                    ResultSet = new ResultSet
+                    {
+                        Offset = 1,
+                        Count = 12,
+                        Limit = 1
+                    }
+                },
+                Results = new List<LocationCategory>
+                {
+                     new LocationCategory
+                     {
+                        Name = "City",
+                        Id = "CITY"
                      }
                 }
             };

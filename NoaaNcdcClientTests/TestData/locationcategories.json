@@ -1,0 +1,15 @@
+﻿{
+  "metadata": {
+    "resultset": {
+      "offset": 1,
+      "count": 12,
+      "limit": 1
+    }
+  },
+  "results": [
+    {
+      "name": "City",
+      "id": "CITY"
+    }
+  ]
+}

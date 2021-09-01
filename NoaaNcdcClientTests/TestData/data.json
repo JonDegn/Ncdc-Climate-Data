@@ -1,18 +1,11 @@
 ﻿{
-  "metadata": {
-    "resultset": {
-      "offset": 1,
-      "count": 2,
-      "limit": 25
-    }
-  },
   "results": [
     {
-      "date": "2020-01-01T00:00:00",
+      "date": "1908-05-01T00:00:00",
       "datatype": "PRCP",
-      "station": "GHCND:US1NCAG0001",
-      "attributes": ",,N,",
-      "value": 10
+      "station": "GHCND:USC00425837",
+      "attributes": "P,,6,",
+      "value": 0
     }
   ]
 }

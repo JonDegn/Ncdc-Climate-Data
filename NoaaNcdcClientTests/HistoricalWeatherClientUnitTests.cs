@@ -56,7 +56,7 @@ namespace NoaaNcdcClientTests
 
             var client = new HistoricalWeatherClient(mockHttp.ToHttpClient(), "token", "user-agent");
 
-            var response = client.GetStations(new StationsRequest());
+            var response = client.GetStations(new StationsRequest().WithExtent(39.4344694, -111.2923622, 39.4666796, -111.2472153));
 
             var expected = new ListResponse<Station>
             {
@@ -73,15 +73,15 @@ namespace NoaaNcdcClientTests
                 {
                     new Station
                     {
-                        Elevation= 946.1,
-                        MinDate= DateTime.Parse("2007-09-08"),
-                        MaxDate= DateTime.Parse("2021-08-27"),
-                        Latitude= 36.458975,
-                        Name= "SPARTA 3.5 SSW, NC US",
-                        DataCoverage= 0.9763,
-                        Id= "GHCND:US1NCAG0001",
+                        Elevation= 2745.9,
+                        MinDate= new DateTime(1978, 09, 30),
+                        MaxDate= new DateTime(2021, 08, 28),
+                        Latitude= 39.45,
+                        Name= "RED PINE RIDGE, UT US",
+                        DataCoverage= 0.9955,
+                        Id= "GHCND:USS0011K28S",
                         ElevationUnit= "METERS",
-                        Longitude= -81.152517
+                        Longitude= -111.27
                     }
                 }
             };
@@ -187,7 +187,7 @@ namespace NoaaNcdcClientTests
 
             var client = new HistoricalWeatherClient(mockHttp.ToHttpClient(), "token", "user-agent");
 
-            var response = client.GetDataCategories(new DataCategoriesRequest());
+            var response = client.GetDataCategories(new DataCategoriesRequest().WithLimit(1));
 
             var expected = new ListResponse<DataCategory>
             {
@@ -278,6 +278,65 @@ namespace NoaaNcdcClientTests
         }
 
         [Test]
+        public void TestGetLocationCategory()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            var locationCategoryId = "CLIM_REG";
+
+            mockHttp
+                .When($"https://www.ncdc.noaa.gov/cdo-web/api/v2/locationcategories/*")
+                .Respond("application/geo+json", File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData/locationcategory.json")));
+
+            var client = new HistoricalWeatherClient(mockHttp.ToHttpClient(), "token", "user-agent");
+
+            var response = client.GetLocationCategory(locationCategoryId);
+
+            var expected = new LocationCategory
+            {
+                Name = "Climate Region",
+                Id = locationCategoryId
+            };
+
+            response.ShouldBeEquivalentTo(expected);
+        }
+
+        [Test]
+        public void TestGetLocationCategories()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp
+                .When($"https://www.ncdc.noaa.gov/cdo-web/api/v2/locationcategories")
+                .Respond("application/geo+json", File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData/locationcategories.json")));
+
+            var client = new HistoricalWeatherClient(mockHttp.ToHttpClient(), "token", "user-agent");
+
+            var response = client.GetLocationCategories(new LocationCategoriesRequest().WithLimit(1));
+
+            var expected = new ListResponse<LocationCategory>
+            {
+                Metadata = new Metadata
+                {
+                    ResultSet = new ResultSet
+                    {
+                        Offset = 1,
+                        Count = 12,
+                        Limit = 1
+                    }
+                },
+                Results = new List<LocationCategory>
+                {
+                     new LocationCategory
+                     {
+                        Name = "City",
+                        Id = "CITY"
+                     }
+                }
+            };
+
+            response.ShouldBeEquivalentTo(expected);
+        }
+
+        [Test]
         public void TestGetData()
         {
             var mockHttp = new MockHttpMessageHandler();
@@ -287,28 +346,27 @@ namespace NoaaNcdcClientTests
 
             var client = new HistoricalWeatherClient(mockHttp.ToHttpClient(), "token", "user-agent");
 
-            var response = client.GetData(new DataRequest());
+            var dataRequest = new DataRequest()
+                .WithDatasets("GHCND")
+                .WithStartDate(new DateTime(1908, 5, 1))
+                .WithEndDate(new DateTime(1908, 5, 2))
+                .WithIncludeMetadata(false)
+                .WithStations("GHCND:USC00425837")
+                .WithLimit(1);
+
+            var response = client.GetData(dataRequest);
 
             var expected = new ListResponse<DataRow>
             {
-                Metadata = new Metadata
-                {
-                    ResultSet = new ResultSet
-                    {
-                        Offset = 1,
-                        Count = 2,
-                        Limit = 25
-                    }
-                },
                 Results = new List<DataRow>
                 {
                     new DataRow
                     {
-                        Date = DateTime.Parse("2020-01-01T00:00:00"),
+                        Date = DateTime.Parse("1908-05-01T00:00:00"),
                         DataType = "PRCP",
-                        Station = "GHCND:US1NCAG0001",
-                        Attributes = ",,N,",
-                        Value = 10
+                        Station = "GHCND:USC00425837",
+                        Attributes = "P,,6,",
+                        Value = 0
                     }
                 }
             };

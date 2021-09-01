@@ -79,6 +79,15 @@ namespace NoaaNcdcClient
             return CallApi<DataType>($"{baseUrl}datatypes/{Uri.EscapeDataString(dataTypeId)}");
         }
 
+        public ListResponse<LocationCategory> GetLocationCategories(LocationCategoriesRequest request)
+        {
+            return CallApi<ListResponse<LocationCategory>>($"{baseUrl}{request.Endpoint}{request.GetQuery()}");
+        }
+
+        public LocationCategory GetLocationCategory(string dataTypeId)
+        {
+            return CallApi<LocationCategory>($"{baseUrl}locationcategories/{Uri.EscapeDataString(dataTypeId)}");
+        }
 
     }
 }
