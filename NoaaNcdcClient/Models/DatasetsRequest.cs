@@ -1,19 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NoaaNcdcClient.Models
 {
-    public class StationsRequest
+    public class DatasetsRequest
     {
-        public string Endpoint { get; } = "stations";
-        public string[] DatasetIds { get; private set; }
-        public string[] LocationIds { get; private set; }
-        public string[] DataCategoryIds { get; private set; }
+        public string Endpoint { get; } = "datasets";
         public string[] DataTypeIds { get; private set; }
-        public double[] Extent { get; private set; }
+        public string[] LocationIds { get; private set; }
+        public string[] StationIds { get; private set; }
         public DateTime? StartDate { get; private set; }
         public DateTime? EndDate { get; private set; }
         public string SortField { get; private set; }
@@ -21,67 +16,55 @@ namespace NoaaNcdcClient.Models
         public int Limit { get; private set; } = 25;
         public int Offset { get; private set; }
 
-        public StationsRequest WithDatasets(params string[] datasetIds)
-        {
-            DatasetIds = datasetIds;
-            return this;
-        }
-
-        public StationsRequest WithLocations(params string[] locationIds)
-        {
-            LocationIds = locationIds;
-            return this;
-        }
-
-        public StationsRequest WithDataCategories(params string[] dataCategoryIds)
-        {
-            DataCategoryIds = dataCategoryIds;
-            return this;
-        }
-
-        public StationsRequest WithDataTypes(params string[] dataTypeIds)
+        public DatasetsRequest WithDataTypes(params string[] dataTypeIds)
         {
             DataTypeIds = dataTypeIds;
             return this;
         }
 
-        public StationsRequest WithExtent(double lonMin, double latMin, double lonMax, double latMax)
+        public DatasetsRequest WithLocations(params string[] locationIds)
         {
-            Extent = new[] { lonMin, latMin, lonMax, latMax };
+            LocationIds = locationIds;
             return this;
         }
 
-        public StationsRequest WithStartDate(DateTime startDate)
+        public DatasetsRequest WithStations(params string[] stationIds)
+        {
+            StationIds = stationIds;
+            return this;
+        }
+
+        public DatasetsRequest WithStartDate(DateTime startDate)
         {
             StartDate = startDate;
             return this;
         }
 
-        public StationsRequest WithEndDate(DateTime endDate)
+        public DatasetsRequest WithEndDate(DateTime endDate)
         {
             EndDate = endDate;
             return this;
         }
 
-        public StationsRequest WithSortField(string sortField)
+        public DatasetsRequest WithSortField(string sortField)
         {
             SortField = sortField;
             return this;
         }
 
-        public StationsRequest WithSortOrder(SortOrder sortOrder)
+        public DatasetsRequest WithSortOrder(SortOrder sortOrder)
         {
             SortOrder = sortOrder;
             return this;
         }
 
-        public StationsRequest WithLimit(int limit)
+        public DatasetsRequest WithLimit(int limit)
         {
             Limit = limit;
             return this;
         }
 
-        public StationsRequest WithOffset(int offset)
+        public DatasetsRequest WithOffset(int offset)
         {
             Offset = offset;
             return this;
@@ -90,11 +73,9 @@ namespace NoaaNcdcClient.Models
         public string GetQuery()
         {
             var queryParams = new List<string>();
-            if (DatasetIds != null && DatasetIds.Length > 0) queryParams.Add(MakeQueryParamForArray("datasetid", DatasetIds));
-            if (LocationIds != null && LocationIds.Length > 0) queryParams.Add(MakeQueryParamForArray("locationid", LocationIds));
-            if (DataCategoryIds != null && DataCategoryIds.Length > 0) queryParams.Add(MakeQueryParamForArray("datacategoryid", DataCategoryIds));
             if (DataTypeIds != null && DataTypeIds.Length > 0) queryParams.Add(MakeQueryParamForArray("datatypeid", DataTypeIds));
-            if (Extent != null && Extent.Length > 0) queryParams.Add($"extent={Extent[0]},{Extent[1]},{Extent[2]},{Extent[3]}");
+            if (LocationIds != null && LocationIds.Length > 0) queryParams.Add(MakeQueryParamForArray("locationid", LocationIds));
+            if (StationIds != null && StationIds.Length > 0) queryParams.Add(MakeQueryParamForArray("stationid", StationIds));
             if (StartDate != null) queryParams.Add($"startdate={StartDate.Value.ToString("yyyy-MM-dd")}");
             if (EndDate != null) queryParams.Add($"enddate={EndDate.Value.ToString("yyyy-MM-dd")}");
             if (SortField != null) queryParams.Add($"sortfield={SortField}");

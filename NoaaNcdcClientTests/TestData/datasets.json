@@ -1,0 +1,18 @@
+﻿{
+  "metadata": {
+    "resultset": {
+      "offset": 1,
+      "count": 1,
+      "limit": 25
+    }
+  },
+  "results": [
+    {
+      "mindate": "1763-01-01",
+      "maxdate": "2021-08-29",
+      "name": "Daily Summaries",
+      "datacoverage": 1,
+      "id": "GHCND"
+    }
+  ]
+}

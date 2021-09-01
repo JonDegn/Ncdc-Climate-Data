@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace NoaaNcdcClient.Models
 {
-    public class StationsResponse
+    public class ListResponse<T>
     {
         public Metadata Metadata { get; set; }
-        public List<Station> Results { get; set; }
+        public List<T> Results { get; set; }
     }
 }

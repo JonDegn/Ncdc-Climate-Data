@@ -23,7 +23,7 @@ namespace NoaaNcdcClientTests
             var stationId = "GHCND:US1NCAG0001";
 
             mockHttp
-                .When($"https://www.ncdc.noaa.gov/cdo-web/api/v2/station/*")
+                .When($"https://www.ncdc.noaa.gov/cdo-web/api/v2/stations/*")
                 .Respond("application/geo+json", File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData/station.json")));
 
             var client = new HistoricalWeatherClient(mockHttp.ToHttpClient(), "token", "user-agent");
@@ -33,11 +33,11 @@ namespace NoaaNcdcClientTests
             var expected = new Station
             {
                 Elevation = 946.1,
-                MinDate = DateTime.Parse("2007-09-08"),
+                MinDate = DateTime.Parse("2007-09-01"),
                 MaxDate = DateTime.Parse("2021-08-27"),
                 Latitude = 36.458975,
                 Name = "SPARTA 3.5 SSW, NC US",
-                DataCoverage = 0.9763,
+                DataCoverage = 1,
                 Id = "GHCND:US1NCAG0001",
                 ElevationUnit = "METERS",
                 Longitude = -81.152517
@@ -58,7 +58,7 @@ namespace NoaaNcdcClientTests
 
             var response = client.GetStations(new StationsRequest());
 
-            var expected = new StationsResponse
+            var expected = new ListResponse<Station>
             {
                 Metadata = new Metadata
                 {
@@ -90,6 +90,71 @@ namespace NoaaNcdcClientTests
         }
 
         [Test]
+        public void TestGetDataset()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            var datasetId = "GHCND";
+
+            mockHttp
+                .When($"https://www.ncdc.noaa.gov/cdo-web/api/v2/datasets/*")
+                .Respond("application/geo+json", File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData/dataset.json")));
+
+            var client = new HistoricalWeatherClient(mockHttp.ToHttpClient(), "token", "user-agent");
+
+            var response = client.GetDataset(datasetId);
+
+            var expected = new Dataset
+            {
+                MinDate = new DateTime(1763, 01, 01),
+                MaxDate = new DateTime(2021, 08, 29),
+                Name = "Daily Summaries",
+                DataCoverage = 1,
+                Id = "GHCND"
+            };
+
+            response.ShouldBeEquivalentTo(expected);
+        }
+
+        [Test]
+        public void TestGetDatasets()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp
+                .When($"https://www.ncdc.noaa.gov/cdo-web/api/v2/datasets")
+                .Respond("application/geo+json", File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData/datasets.json")));
+
+            var client = new HistoricalWeatherClient(mockHttp.ToHttpClient(), "token", "user-agent");
+
+            var response = client.GetDatasets(new DatasetsRequest());
+
+            var expected = new ListResponse<Dataset>
+            {
+                Metadata = new Metadata
+                {
+                    ResultSet = new ResultSet
+                    {
+                        Offset = 1,
+                        Count = 1,
+                        Limit = 25
+                    }
+                },
+                Results = new List<Dataset>
+                {
+                     new Dataset
+                     {
+                        MinDate = new DateTime(1763, 01, 01),
+                        MaxDate = new DateTime(2021, 08, 29),
+                        Name = "Daily Summaries",
+                        DataCoverage = 1,
+                        Id = "GHCND"
+                     }
+                }
+            };
+
+            response.ShouldBeEquivalentTo(expected);
+        }
+
+        [Test]
         public void TestGetData()
         {
             var mockHttp = new MockHttpMessageHandler();
@@ -101,7 +166,7 @@ namespace NoaaNcdcClientTests
 
             var response = client.GetData(new DataRequest());
 
-            var expected = new DataResponse
+            var expected = new ListResponse<DataRow>
             {
                 Metadata = new Metadata
                 {

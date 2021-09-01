@@ -12,6 +12,6 @@ namespace NoaaNcdcClient.Models
         public string DataType { get; set; }
         public string Station { get; set; }
         public string Attributes { get; set; }
-        public int Value { get; set; }
+        public double Value { get; set; }
     }
 }

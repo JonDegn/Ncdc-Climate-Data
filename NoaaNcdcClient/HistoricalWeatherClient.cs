@@ -34,19 +34,29 @@ namespace NoaaNcdcClient
             return JsonSerializer.Deserialize<T>(responseJson, SerializerOptions);
         }
 
-        public DataResponse GetData(DataRequest request)
+        public ListResponse<DataRow> GetData(DataRequest request)
         {
-            return CallApi<DataResponse>($"{baseUrl}{request.Endpoint}{request.GetQuery()}");
+            return CallApi<ListResponse<DataRow>>($"{baseUrl}{request.Endpoint}{request.GetQuery()}");
         }
 
-        public StationsResponse GetStations(StationsRequest request)
+        public ListResponse<Station> GetStations(StationsRequest request)
         {
-            return CallApi<StationsResponse>($"{baseUrl}{request.Endpoint}{request.GetQuery()}");
+            return CallApi<ListResponse<Station>>($"{baseUrl}{request.Endpoint}{request.GetQuery()}");
         }
 
         public Station GetStation(string stationId)
         {
             return CallApi<Station>($"{baseUrl}stations/{Uri.EscapeDataString(stationId)}");
+        }
+
+        public ListResponse<Dataset> GetDatasets(DatasetsRequest request)
+        {
+            return CallApi<ListResponse<Dataset>>($"{baseUrl}{request.Endpoint}{request.GetQuery()}");
+        }
+
+        public Dataset GetDataset(string datasetId)
+        {
+            return CallApi<Dataset>($"{baseUrl}datasets/{Uri.EscapeDataString(datasetId)}");
         }
 
 
