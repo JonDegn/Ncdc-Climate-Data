@@ -1,4 +1,6 @@
-﻿using NoaaNcdcClient.Models;
+﻿using Microsoft.Extensions.Logging;
+using NoaaNcdcClient.Models;
+using NoaaNcdcClient.Requests;
 using System;
 using System.Net.Http;
 using System.Text.Json;
@@ -9,11 +11,14 @@ namespace NoaaNcdcClient
     {
         private HttpClient HttpClient { get; }
         private JsonSerializerOptions SerializerOptions { get; }
+        public ILogger<HistoricalWeatherClient> Logger { get; set; }
 
         private readonly string baseUrl = "https://www.ncdc.noaa.gov/cdo-web/api/v2/";
 
-        public HistoricalWeatherClient(HttpClient httpClient, string token, string userAgent)
+        public HistoricalWeatherClient(HttpClient httpClient, string token, string userAgent, ILogger<HistoricalWeatherClient> logger = null)
         {
+           Logger = logger;
+
             HttpClient = httpClient;
             SerializerOptions = new JsonSerializerOptions
             {
@@ -25,28 +30,15 @@ namespace NoaaNcdcClient
 
         private T CallApi<T>(string url)
         {
+            Logger?.LogInformation($"Calling: {url}");
+
             var response = HttpClient.GetAsync(url).Result;
-
             response.EnsureSuccessStatusCode();
-
             var responseJson = response.Content.ReadAsStringAsync().Result;
 
+            Logger?.LogInformation($"Response: {responseJson}");
+
             return JsonSerializer.Deserialize<T>(responseJson, SerializerOptions);
-        }
-
-        public ListResponse<DataRow> GetData(DataRequest request)
-        {
-            return CallApi<ListResponse<DataRow>>($"{baseUrl}{request.Endpoint}{request.GetQuery()}");
-        }
-
-        public ListResponse<Station> GetStations(StationsRequest request)
-        {
-            return CallApi<ListResponse<Station>>($"{baseUrl}{request.Endpoint}{request.GetQuery()}");
-        }
-
-        public Station GetStation(string stationId)
-        {
-            return CallApi<Station>($"{baseUrl}stations/{Uri.EscapeDataString(stationId)}");
         }
 
         public ListResponse<Dataset> GetDatasets(DatasetsRequest request)
@@ -64,9 +56,9 @@ namespace NoaaNcdcClient
             return CallApi<ListResponse<DataCategory>>($"{baseUrl}{request.Endpoint}{request.GetQuery()}");
         }
 
-        public DataCategory GetDataCategory(string datasetId)
+        public DataCategory GetDataCategory(string dataCategoryId)
         {
-            return CallApi<DataCategory>($"{baseUrl}datacategories/{Uri.EscapeDataString(datasetId)}");
+            return CallApi<DataCategory>($"{baseUrl}datacategories/{Uri.EscapeDataString(dataCategoryId)}");
         }
 
         public ListResponse<DataType> GetDataTypes(DataTypesRequest request)
@@ -84,10 +76,34 @@ namespace NoaaNcdcClient
             return CallApi<ListResponse<LocationCategory>>($"{baseUrl}{request.Endpoint}{request.GetQuery()}");
         }
 
-        public LocationCategory GetLocationCategory(string dataTypeId)
+        public LocationCategory GetLocationCategory(string locationCategoryId)
         {
-            return CallApi<LocationCategory>($"{baseUrl}locationcategories/{Uri.EscapeDataString(dataTypeId)}");
+            return CallApi<LocationCategory>($"{baseUrl}locationcategories/{Uri.EscapeDataString(locationCategoryId)}");
         }
 
+        public ListResponse<Location> GetLocations(LocationsRequest request)
+        {
+            return CallApi<ListResponse<Location>>($"{baseUrl}{request.Endpoint}{request.GetQuery()}");
+        }
+
+        public Location GetLocation(string locationId)
+        {
+            return CallApi<Location>($"{baseUrl}locations/{Uri.EscapeDataString(locationId)}");
+        }
+
+        public ListResponse<Station> GetStations(StationsRequest request)
+        {
+            return CallApi<ListResponse<Station>>($"{baseUrl}{request.Endpoint}{request.GetQuery()}");
+        }
+
+        public Station GetStation(string stationId)
+        {
+            return CallApi<Station>($"{baseUrl}stations/{Uri.EscapeDataString(stationId)}");
+        }
+
+        public ListResponse<DataRow> GetData(DataRequest request)
+        {
+            return CallApi<ListResponse<DataRow>>($"{baseUrl}{request.Endpoint}{request.GetQuery()}");
+        }
     }
 }

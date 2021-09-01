@@ -1,8 +1,9 @@
-﻿using System;
+﻿using NoaaNcdcClient.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace NoaaNcdcClient.Models
+namespace NoaaNcdcClient.Requests
 {
     public abstract class ApiRequest<T> where T : ApiRequest<T>
     {
@@ -22,37 +23,37 @@ namespace NoaaNcdcClient.Models
 
         public T WithStartDate(DateTime startDate)
         {
-            SetParam("startdate", startDate.ToString("yyyy-MM-dd"));
+            SetParam(QueryParameters.StartDate, startDate.ToString("yyyy-MM-dd"));
             return (T)this;
         }
 
         public T WithEndDate(DateTime endDate)
         {
-            SetParam("enddate", endDate.ToString("yyyy-MM-dd"));
+            SetParam(QueryParameters.EndDate, endDate.ToString("yyyy-MM-dd"));
             return (T)this;
         }
 
         public T WithSortField(string sortField)
         {
-            SetParam("sortfield", sortField);
+            SetParam(QueryParameters.SortField, sortField);
             return (T)this;
         }
 
         public T WithSortOrder(SortOrder sortOrder)
         {
-            SetParam("sortfield", Enum.GetName(sortOrder));
+            SetParam(QueryParameters.SortOrder, Enum.GetName(sortOrder));
             return (T)this;
         }
 
         public T WithLimit(int limit)
         {
-            SetParam("limit", limit.ToString());
+            SetParam(QueryParameters.Limit, limit.ToString());
             return (T)this;
         }
 
         public T WithOffset(int offset)
         {
-            SetParam("offset", offset.ToString());
+            SetParam(QueryParameters.Offset, offset.ToString());
             return (T)this;
         }
 

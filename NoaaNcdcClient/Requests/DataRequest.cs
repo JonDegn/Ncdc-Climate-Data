@@ -1,6 +1,7 @@
-﻿using System;
+﻿using NoaaNcdcClient.Models;
+using System;
 
-namespace NoaaNcdcClient.Models
+namespace NoaaNcdcClient.Requests
 {
     public class DataRequest : ApiRequest<DataRequest>
     {
@@ -8,25 +9,25 @@ namespace NoaaNcdcClient.Models
 
         public DataRequest WithDatasets(params string[] datasetIds)
         {
-            SetArrayParam("datasetid", datasetIds);
+            SetArrayParam(QueryParameters.Dataset, datasetIds);
             return this;
         }
 
         public DataRequest WithLocations(params string[] locationIds)
         {
-            SetArrayParam("locationid", locationIds);
+            SetArrayParam(QueryParameters.Location, locationIds);
             return this;
         }
 
         public DataRequest WithStations(params string[] stationIds)
         {
-            SetArrayParam("stationid", stationIds);
+            SetArrayParam(QueryParameters.Station, stationIds);
             return this;
         }
 
         public DataRequest WithUnits(Units units)
         {
-            SetParam("units", Enum.GetName(units));
+            SetParam(QueryParameters.Units, Enum.GetName(units));
             return this;
         }
 

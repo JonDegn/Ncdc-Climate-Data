@@ -2,7 +2,7 @@
 
 namespace NoaaNcdcClient.Models
 {
-    public class DataType
+    public class Location
     {
         public DateTime MinDate { get; set; }
         public DateTime MaxDate { get; set; }

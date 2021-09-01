@@ -1,4 +1,4 @@
-﻿namespace NoaaNcdcClient.Models
+﻿namespace NoaaNcdcClient.Requests
 {
     public class StationsRequest : ApiRequest<StationsRequest>
     {
@@ -6,31 +6,31 @@
 
         public StationsRequest WithDatasets(params string[] datasetIds)
         {
-            SetArrayParam("datasetid", datasetIds);
+            SetArrayParam(QueryParameters.Dataset, datasetIds);
             return this;
         }
 
         public StationsRequest WithLocations(params string[] locationIds)
         {
-            SetArrayParam("locationid", locationIds);
+            SetArrayParam(QueryParameters.Location, locationIds);
             return this;
         }
 
         public StationsRequest WithDataCategories(params string[] dataCategoryIds)
         {
-            SetArrayParam("datacategoryid", dataCategoryIds);
+            SetArrayParam(QueryParameters.DataCategory, dataCategoryIds);
             return this;
         }
 
         public StationsRequest WithDataTypes(params string[] dataTypeIds)
         {
-            SetArrayParam("datatypeid", dataTypeIds);
+            SetArrayParam(QueryParameters.DataType, dataTypeIds);
             return this;
         }
 
         public StationsRequest WithExtent(double lonMin, double latMin, double lonMax, double latMax)
         {
-            SetParam("extent", $"{lonMin},{latMin},{lonMax},{latMax}");
+            SetParam(QueryParameters.Extent, $"{lonMin},{latMin},{lonMax},{latMax}");
             return this;
         }
     }

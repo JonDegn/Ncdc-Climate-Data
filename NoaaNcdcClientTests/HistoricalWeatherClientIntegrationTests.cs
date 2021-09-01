@@ -5,13 +5,15 @@ using System;
 using Shouldly;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
+using NoaaNcdcClient.Requests;
+using Microsoft.Extensions.Logging;
 
 namespace NoaaNcdcClientTests
 {
     public class HistoricalWeatherClientIntegrationTests
     {
         public IConfiguration Configuration { get; set; }
+        public HistoricalWeatherClient Client { get; set; }
 
         [SetUp]
         public void Setup()
@@ -19,69 +21,8 @@ namespace NoaaNcdcClientTests
             Configuration = new ConfigurationBuilder()
                 .AddUserSecrets<HistoricalWeatherClientIntegrationTests>()
                 .Build();
-        }
-
-        [Test]
-        public void TestGetStation()
-        {
-            var stationId = "GHCND:US1NCAG0001";
-
-            var client = new HistoricalWeatherClient(new System.Net.Http.HttpClient(), Configuration["NCDC:Token"], Configuration["NCDC:UserAgent"]);
-
-            var response = client.GetStation(stationId);
-
-            var expected = new Station
-            {
-                Elevation = 946.1,
-                MinDate = DateTime.Parse("2007-09-01"),
-                MaxDate = DateTime.Parse("2021-08-28"),
-                Latitude = 36.458975,
-                Name = "SPARTA 3.5 SSW, NC US",
-                DataCoverage = 1,
-                Id = "GHCND:US1NCAG0001",
-                ElevationUnit = "METERS",
-                Longitude = -81.152517
-            };
-
-            response.ShouldBeEquivalentTo(expected);
-        }
-
-        [Test]
-        public void TestGetStations()
-        {
-            var client = new HistoricalWeatherClient(new System.Net.Http.HttpClient(), Configuration["NCDC:Token"], Configuration["NCDC:UserAgent"]);
-
-            var response = client.GetStations(new StationsRequest().WithExtent(39.4344694, -111.2923622, 39.4666796, -111.2472153));
-
-            var expected = new ListResponse<Station>
-            {
-                Metadata = new Metadata
-                {
-                    ResultSet = new ResultSet
-                    {
-                        Offset = 1,
-                        Count = 1,
-                        Limit = 25
-                    }
-                },
-                Results = new List<Station>
-                {
-                    new Station
-                    {
-                        Elevation= 2745.9,
-                        MinDate= new DateTime(1978, 09, 30),
-                        MaxDate= new DateTime(2021, 08, 28),
-                        Latitude= 39.45,
-                        Name= "RED PINE RIDGE, UT US",
-                        DataCoverage= 0.9955,
-                        Id= "GHCND:USS0011K28S",
-                        ElevationUnit= "METERS",
-                        Longitude= -111.27
-                    }
-                }
-            };
-
-            response.ShouldBeEquivalentTo(expected);
+            var logger = LoggerFactory.Create(b => b.AddConsole()).CreateLogger<HistoricalWeatherClient>();
+            Client = new HistoricalWeatherClient(new System.Net.Http.HttpClient(), Configuration["NCDC:Token"], Configuration["NCDC:UserAgent"], logger);
         }
 
         [Test]
@@ -89,54 +30,37 @@ namespace NoaaNcdcClientTests
         {
             var datasetId = "GHCND";
 
-            var client = new HistoricalWeatherClient(new System.Net.Http.HttpClient(), Configuration["NCDC:Token"], Configuration["NCDC:UserAgent"]);
+            var response = Client.GetDataset(datasetId);
 
-            var response = client.GetDataset(datasetId);
-
-            var expected = new Dataset
-            {
-                MinDate = new DateTime(1763, 01, 01),
-                MaxDate = new DateTime(2021, 08, 29),
-                Name = "Daily Summaries",
-                DataCoverage = 1,
-                Id = "GHCND"
-            };
-
-            response.ShouldBeEquivalentTo(expected);
+            response.MinDate.ShouldBe(new DateTime(1763, 01, 01));
+            response.MaxDate.ShouldBeGreaterThanOrEqualTo(new DateTime(2021, 08, 29));
+            response.Name.ShouldBe("Daily Summaries");
+            response.DataCoverage.ShouldBe(1);
+            response.Id.ShouldBe(datasetId);
         }
 
         [Test]
         public void TestGetDatasets()
         {
-            var client = new HistoricalWeatherClient(new System.Net.Http.HttpClient(), Configuration["NCDC:Token"], Configuration["NCDC:UserAgent"]);
+            var response = Client.GetDatasets(new DatasetsRequest().WithDataTypes("TOBS"));
 
-            var response = client.GetDatasets(new DatasetsRequest().WithDataTypes("TOBS"));
-
-            var expected = new ListResponse<Dataset>
+            var expectedMetadata = new Metadata
             {
-                Metadata = new Metadata
+                ResultSet = new ResultSet
                 {
-                    ResultSet = new ResultSet
-                    {
-                        Offset = 1,
-                        Count = 1,
-                        Limit = 25
-                    }
-                },
-                Results = new List<Dataset>
-                {
-                     new Dataset
-                     {
-                        MinDate = new DateTime(1763, 01, 01),
-                        MaxDate = new DateTime(2021, 08, 29),
-                        Name = "Daily Summaries",
-                        DataCoverage = 1,
-                        Id = "GHCND"
-                     }
+                    Offset = 1,
+                    Count = 1,
+                    Limit = 25
                 }
             };
 
-            response.ShouldBeEquivalentTo(expected);
+            response.Metadata.ShouldBeEquivalentTo(expectedMetadata);
+            response.Results.Count.ShouldBe(1);
+            response.Results[0].MinDate.ShouldBe(new DateTime(1763, 01, 01));
+            response.Results[0].MaxDate.ShouldBeGreaterThanOrEqualTo(new DateTime(2021, 08, 29));
+            response.Results[0].Name.ShouldBe("Daily Summaries");
+            response.Results[0].DataCoverage.ShouldBe(1);
+            response.Results[0].Id.ShouldBe("GHCND");
         }
 
         [Test]
@@ -144,9 +68,7 @@ namespace NoaaNcdcClientTests
         {
             var dataCategoryId = "ANNAGR";
 
-            var client = new HistoricalWeatherClient(new System.Net.Http.HttpClient(), Configuration["NCDC:Token"], Configuration["NCDC:UserAgent"]);
-
-            var response = client.GetDataCategory(dataCategoryId);
+            var response = Client.GetDataCategory(dataCategoryId);
 
             var expected = new DataCategory
             {
@@ -160,9 +82,7 @@ namespace NoaaNcdcClientTests
         [Test]
         public void TestGetDataCategories()
         {
-            var client = new HistoricalWeatherClient(new System.Net.Http.HttpClient(), Configuration["NCDC:Token"], Configuration["NCDC:UserAgent"]);
-
-            var response = client.GetDataCategories(new DataCategoriesRequest().WithLimit(1));
+            var response = Client.GetDataCategories(new DataCategoriesRequest().WithLimit(1));
 
             var expected = new ListResponse<DataCategory>
             {
@@ -193,9 +113,7 @@ namespace NoaaNcdcClientTests
         {
             var dataTypeId = "ACMH";
 
-            var client = new HistoricalWeatherClient(new System.Net.Http.HttpClient(), Configuration["NCDC:Token"], Configuration["NCDC:UserAgent"]);
-
-            var response = client.GetDataType(dataTypeId);
+            var response = Client.GetDataType(dataTypeId);
 
             var expected = new DataType
             {
@@ -211,35 +129,25 @@ namespace NoaaNcdcClientTests
         [Test]
         public void TestGetDataTypes()
         {
-            var client = new HistoricalWeatherClient(new System.Net.Http.HttpClient(), Configuration["NCDC:Token"], Configuration["NCDC:UserAgent"]);
+            var response = Client.GetDataTypes(new DataTypesRequest().WithDataCategories("TEMP").WithLimit(1));
 
-            var response = client.GetDataTypes(new DataTypesRequest().WithDataCategories("TEMP").WithLimit(1));
-
-            var expected = new ListResponse<DataType>
+            var expectedMetadata = new Metadata
             {
-                Metadata = new Metadata
+                ResultSet = new ResultSet
                 {
-                    ResultSet = new ResultSet
-                    {
-                        Offset = 1,
-                        Count = 59,
-                        Limit = 1
-                    }
-                },
-                Results = new List<DataType>
-                {
-                     new DataType
-                     {
-                        MinDate = new DateTime(1763, 01, 01),
-                        MaxDate = new DateTime(2021, 07, 01),
-                        Name = "Cooling Degree Days Season to Date",
-                        DataCoverage = 1,
-                        Id = "CDSD"
-                     }
+                    Offset = 1,
+                    Count = 59,
+                    Limit = 1
                 }
             };
 
-            response.ShouldBeEquivalentTo(expected);
+            response.Metadata.ShouldBeEquivalentTo(expectedMetadata);
+            response.Results.Count.ShouldBe(1);
+            response.Results[0].MinDate.ShouldBe(new DateTime(1763, 01, 01));
+            response.Results[0].MaxDate.ShouldBeGreaterThanOrEqualTo(new DateTime(2021, 07, 01));
+            response.Results[0].Name.ShouldBe("Cooling Degree Days Season to Date");
+            response.Results[0].DataCoverage.ShouldBe(1);
+            response.Results[0].Id.ShouldBe("CDSD");
         }
 
         [Test]
@@ -247,9 +155,7 @@ namespace NoaaNcdcClientTests
         {
             var locationCategoryId = "CLIM_REG";
 
-            var client = new HistoricalWeatherClient(new System.Net.Http.HttpClient(), Configuration["NCDC:Token"], Configuration["NCDC:UserAgent"]);
-
-            var response = client.GetLocationCategory(locationCategoryId);
+            var response = Client.GetLocationCategory(locationCategoryId);
 
             var expected = new LocationCategory
             {
@@ -263,9 +169,7 @@ namespace NoaaNcdcClientTests
         [Test]
         public void TestGetLocationCategories()
         {
-            var client = new HistoricalWeatherClient(new System.Net.Http.HttpClient(), Configuration["NCDC:Token"], Configuration["NCDC:UserAgent"]);
-
-            var response = client.GetLocationCategories(new LocationCategoriesRequest().WithLimit(1));
+            var response = Client.GetLocationCategories(new LocationCategoriesRequest().WithLimit(1));
 
             var expected = new ListResponse<LocationCategory>
             {
@@ -292,10 +196,95 @@ namespace NoaaNcdcClientTests
         }
 
         [Test]
+        public void TestGetLocation()
+        {
+            var locationId = "FIPS:37";
+
+            var response = Client.GetLocation(locationId);
+
+            response.MinDate.ShouldBe(new DateTime(1869, 03, 01));
+            response.MaxDate.ShouldBeGreaterThanOrEqualTo(new DateTime(2021, 08, 29));
+            response.Name.ShouldBe("North Carolina");
+            response.DataCoverage.ShouldBe(1);
+            response.Id.ShouldBe(locationId);
+        }
+
+        [Test]
+        public void TestGetLocations()
+        {
+            string locationCategory = "ST";
+            int limit = 1;
+            var response = Client.GetLocations(new LocationsRequest().WithLocationCategories(locationCategory).WithLimit(limit));
+
+            var expectedMetadata = new Metadata
+            {
+                ResultSet = new ResultSet
+                {
+                    Offset = 1,
+                    Count = 51,
+                    Limit = limit
+                }
+            };
+
+            response.Metadata.ShouldBeEquivalentTo(expectedMetadata);
+            response.Results.Count.ShouldBe(limit);
+            response.Results[0].MinDate.ShouldBe(new DateTime(1888, 02, 01));
+            response.Results[0].MaxDate.ShouldBeGreaterThanOrEqualTo(new DateTime(2021, 07, 01));
+            response.Results[0].Name.ShouldBe("Alabama");
+            response.Results[0].DataCoverage.ShouldBe(1);
+            response.Results[0].Id.ShouldBe("FIPS:01");
+        }
+
+        [Test]
+        public void TestGetStation()
+        {
+            var stationId = "GHCND:US1NCAG0001";
+
+            var response = Client.GetStation(stationId);
+
+            response.Elevation.ShouldBe(946.1);
+            response.MinDate.ShouldBe(new DateTime(2007, 09, 01));
+            response.MaxDate.ShouldBeGreaterThanOrEqualTo(new DateTime(2021, 08, 28));
+            response.Latitude.ShouldBe(36.458975);
+            response.Name.ShouldBe("SPARTA 3.5 SSW, NC US");
+            response.DataCoverage.ShouldBe(1);
+            response.Id.ShouldBe(stationId);
+            response.ElevationUnit.ShouldBe("METERS");
+            response.Longitude.ShouldBe(-81.152517);
+
+        }
+
+        [Test]
+        public void TestGetStations()
+        {
+            var response = Client.GetStations(new StationsRequest().WithExtent(39.4344694, -111.2923622, 39.4666796, -111.2472153));
+
+            var expectedMetadata = new Metadata
+            {
+                ResultSet = new ResultSet
+                {
+                    Offset = 1,
+                    Count = 1,
+                    Limit = 25
+                }
+            };
+
+            response.Metadata.ShouldBeEquivalentTo(expectedMetadata);
+            response.Results.Count.ShouldBe(1);
+            response.Results[0].Elevation.ShouldBe(2745.9);
+            response.Results[0].MinDate.ShouldBe(new DateTime(1978, 09, 30));
+            response.Results[0].MaxDate.ShouldBeGreaterThanOrEqualTo(new DateTime(2021, 08, 28));
+            response.Results[0].Latitude.ShouldBe(39.45);
+            response.Results[0].Name.ShouldBe("RED PINE RIDGE, UT US");
+            response.Results[0].DataCoverage.ShouldBe(0.9955);
+            response.Results[0].Id.ShouldBe("GHCND:USS0011K28S");
+            response.Results[0].ElevationUnit.ShouldBe("METERS");
+            response.Results[0].Longitude.ShouldBe(-111.27);
+        }
+
+        [Test]
         public void TestGetData()
         {
-            var client = new HistoricalWeatherClient(new System.Net.Http.HttpClient(), Configuration["NCDC:Token"], Configuration["NCDC:UserAgent"]);
-
             var dataRequest = new DataRequest()
                 .WithDatasets("GHCND")
                 .WithStartDate(new DateTime(1908, 5, 1))
@@ -304,7 +293,7 @@ namespace NoaaNcdcClientTests
                 .WithStations("GHCND:USC00425837")
                 .WithLimit(1);
 
-            var response = client.GetData(dataRequest);
+            var response = Client.GetData(dataRequest);
 
             var expected = new ListResponse<DataRow>
             {

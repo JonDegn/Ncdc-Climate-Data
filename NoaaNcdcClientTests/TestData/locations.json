@@ -1,0 +1,18 @@
+﻿{
+  "metadata": {
+    "resultset": {
+      "offset": 1,
+      "count": 51,
+      "limit": 1
+    }
+  },
+  "results": [
+    {
+      "mindate": "1888-02-01",
+      "maxdate": "2021-08-30",
+      "name": "Alabama",
+      "datacoverage": 1,
+      "id": "FIPS:01"
+    }
+  ]
+}
