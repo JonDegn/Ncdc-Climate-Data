@@ -1,26 +1,3 @@
-# NCDC Climate Data Wrapper
-
-This is a .net wrapper to the [NCDC Climate Data Online (CDO)](https://www.ncdc.noaa.gov/cdo-web/webservices/v2) api.
-
-You will need an access token. You can request one [here](https://www.ncdc.noaa.gov/cdo-web/token).
-
-
-## Usage
-
-```
-var client = new ClimateDataClient(httpClient, "<your_token>", "<user_agent>")
-
-// Construct a request object for "GHCND" data from the station "GHCND:USC00425837" for dates between 1908-05-01 and 1908-06-01
-var dataRequest = new DataRequest("GHCND", new DateTime(1908, 5, 1), new DateTime(1908, 6, 1))
-    .WithStations("GHCND:USC00425837");
-
-// Get data
-var response = client.GetData(dataRequest);
-
-```
-
-## License
-
 MIT License
 
 Copyright 2021 Jonathon Degn

@@ -1,16 +1,14 @@
-using NoaaNcdcClient;
 using NUnit.Framework;
 using RichardSzalay.MockHttp;
 using System.IO;
-using NoaaNcdcClient.Models;
 using System;
 using System.Collections.Generic;
 using Shouldly;
-using NoaaNcdcClient.Requests;
+using JonDegn.ClimateData;
 
-namespace NoaaNcdcClientTests
+namespace JonDegn.ClimateDataTests
 {
-    public class HistoricalWeatherClientUnitTests
+    public class ClimateDataClientUnitTests
     {
         [SetUp]
         public void Setup()
@@ -27,7 +25,7 @@ namespace NoaaNcdcClientTests
                 .When($"https://www.ncdc.noaa.gov/cdo-web/api/v2/datasets/{Uri.EscapeDataString(datasetId)}")
                 .Respond("application/geo+json", File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData/dataset.json")));
 
-            var client = new HistoricalWeatherClient(mockHttp.ToHttpClient(), "token", "user-agent");
+            var client = new ClimateDataClient(mockHttp.ToHttpClient(), "token", "user-agent");
 
             var response = client.GetDataset(datasetId);
 
@@ -56,7 +54,7 @@ namespace NoaaNcdcClientTests
                 })
                 .Respond("application/geo+json", File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData/datasets.json")));
 
-            var client = new HistoricalWeatherClient(mockHttp.ToHttpClient(), "token", "user-agent");
+            var client = new ClimateDataClient(mockHttp.ToHttpClient(), "token", "user-agent");
 
             var response = client.GetDatasets(new DatasetsRequest().WithDataTypes(dataType));
 
@@ -97,7 +95,7 @@ namespace NoaaNcdcClientTests
                 .When($"https://www.ncdc.noaa.gov/cdo-web/api/v2/datacategories/{Uri.EscapeDataString(dataCategoryId)}")
                 .Respond("application/geo+json", File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData/datacategory.json")));
 
-            var client = new HistoricalWeatherClient(mockHttp.ToHttpClient(), "token", "user-agent");
+            var client = new ClimateDataClient(mockHttp.ToHttpClient(), "token", "user-agent");
 
             var response = client.GetDataCategory(dataCategoryId);
 
@@ -123,7 +121,7 @@ namespace NoaaNcdcClientTests
                 })
                 .Respond("application/geo+json", File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData/datacategories.json")));
 
-            var client = new HistoricalWeatherClient(mockHttp.ToHttpClient(), "token", "user-agent");
+            var client = new ClimateDataClient(mockHttp.ToHttpClient(), "token", "user-agent");
 
             var response = client.GetDataCategories(new DataCategoriesRequest().WithLimit(limit));
 
@@ -161,7 +159,7 @@ namespace NoaaNcdcClientTests
                 .When($"https://www.ncdc.noaa.gov/cdo-web/api/v2/datatypes/{Uri.EscapeDataString(dataTypeId)}")
                 .Respond("application/geo+json", File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData/datatype.json")));
 
-            var client = new HistoricalWeatherClient(mockHttp.ToHttpClient(), "token", "user-agent");
+            var client = new ClimateDataClient(mockHttp.ToHttpClient(), "token", "user-agent");
 
             var response = client.GetDataType(dataTypeId);
 
@@ -191,7 +189,7 @@ namespace NoaaNcdcClientTests
                 })
                 .Respond("application/geo+json", File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData/datatypes.json")));
 
-            var client = new HistoricalWeatherClient(mockHttp.ToHttpClient(), "token", "user-agent");
+            var client = new ClimateDataClient(mockHttp.ToHttpClient(), "token", "user-agent");
 
             var response = client.GetDataTypes(new DataTypesRequest().WithDataCategories(dataCategory).WithLimit(limit));
 
@@ -232,7 +230,7 @@ namespace NoaaNcdcClientTests
                 .When($"https://www.ncdc.noaa.gov/cdo-web/api/v2/locationcategories/{Uri.EscapeDataString(locationCategoryId)}")
                 .Respond("application/geo+json", File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData/locationcategory.json")));
 
-            var client = new HistoricalWeatherClient(mockHttp.ToHttpClient(), "token", "user-agent");
+            var client = new ClimateDataClient(mockHttp.ToHttpClient(), "token", "user-agent");
 
             var response = client.GetLocationCategory(locationCategoryId);
 
@@ -258,7 +256,7 @@ namespace NoaaNcdcClientTests
                 })
                 .Respond("application/geo+json", File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData/locationcategories.json")));
 
-            var client = new HistoricalWeatherClient(mockHttp.ToHttpClient(), "token", "user-agent");
+            var client = new ClimateDataClient(mockHttp.ToHttpClient(), "token", "user-agent");
 
             var response = client.GetLocationCategories(new LocationCategoriesRequest().WithLimit(limit));
 
@@ -296,7 +294,7 @@ namespace NoaaNcdcClientTests
                 .When($"https://www.ncdc.noaa.gov/cdo-web/api/v2/locations/{Uri.EscapeDataString(locationId)}")
                 .Respond("application/geo+json", File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData/location.json")));
 
-            var client = new HistoricalWeatherClient(mockHttp.ToHttpClient(), "token", "user-agent");
+            var client = new ClimateDataClient(mockHttp.ToHttpClient(), "token", "user-agent");
 
             var response = client.GetLocation(locationId);
 
@@ -327,7 +325,7 @@ namespace NoaaNcdcClientTests
                 })
                 .Respond("application/geo+json", File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData/locations.json")));
 
-            var client = new HistoricalWeatherClient(mockHttp.ToHttpClient(), "token", "user-agent");
+            var client = new ClimateDataClient(mockHttp.ToHttpClient(), "token", "user-agent");
 
             var response = client.GetLocations(new LocationsRequest().WithLocationCategories(locationCategory).WithLimit(limit));
 
@@ -368,7 +366,7 @@ namespace NoaaNcdcClientTests
                 .When($"https://www.ncdc.noaa.gov/cdo-web/api/v2/stations/{Uri.EscapeDataString(stationId)}")
                 .Respond("application/geo+json", File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData/station.json")));
 
-            var client = new HistoricalWeatherClient(mockHttp.ToHttpClient(), "token", "user-agent");
+            var client = new ClimateDataClient(mockHttp.ToHttpClient(), "token", "user-agent");
 
             var response = client.GetStation(stationId);
 
@@ -401,7 +399,7 @@ namespace NoaaNcdcClientTests
                 })
                 .Respond("application/geo+json", File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData/stations.json")));
 
-            var client = new HistoricalWeatherClient(mockHttp.ToHttpClient(), "token", "user-agent");
+            var client = new ClimateDataClient(mockHttp.ToHttpClient(), "token", "user-agent");
 
             var response = client.GetStations(new StationsRequest().WithExtent(39.4344694, -111.2923622, 39.4666796, -111.2472153));
 
@@ -457,12 +455,9 @@ namespace NoaaNcdcClientTests
                 })
                 .Respond("application/geo+json", File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData/data.json")));
 
-            var client = new HistoricalWeatherClient(mockHttp.ToHttpClient(), "token", "user-agent");
+            var client = new ClimateDataClient(mockHttp.ToHttpClient(), "token", "user-agent");
 
-            var dataRequest = new DataRequest()
-                .WithDatasets(dataset)
-                .WithStartDate(new DateTime(1908, 5, 1))
-                .WithEndDate(new DateTime(1908, 5, 2))
+            var dataRequest = new DataRequest(dataset, new DateTime(1908, 5, 1), new DateTime(1908, 5, 2))
                 .WithIncludeMetadata(includeMetadata)
                 .WithStations(station)
                 .WithLimit(limit);

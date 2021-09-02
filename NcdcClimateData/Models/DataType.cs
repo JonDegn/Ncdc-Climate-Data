@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace NoaaNcdcClient.Models
+namespace JonDegn.ClimateData
 {
-    public class Dataset
+    /// <summary>
+    /// Describes the type of data, acts as a label. If it's 64°f out right now, then the data type is Air Temperature and the data is 64.
+    /// </summary>
+    public class DataType
     {
         public DateTime MinDate { get; set; }
         public DateTime MaxDate { get; set; }

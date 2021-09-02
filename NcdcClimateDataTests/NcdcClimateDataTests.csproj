@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NoaaNcdcClient\NoaaNcdcClient.csproj" />
+    <ProjectReference Include="..\NcdcClimateData\NcdcClimateData.csproj" />
   </ItemGroup>
 
   <ItemGroup>

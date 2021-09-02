@@ -1,4 +1,4 @@
-﻿namespace NoaaNcdcClient
+﻿namespace JonDegn.ClimateData
 {
     public static class QueryParameters
     {

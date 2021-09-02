@@ -1,7 +1,10 @@
 ﻿using System;
 
-namespace NoaaNcdcClient.Models
+namespace JonDegn.ClimateData
 {
+    /// <summary>
+    /// Locations can be a specific latitude/longitude point such as a station, or a label representing a bounding area such as a city.
+    /// </summary>
     public class Location
     {
         public DateTime MinDate { get; set; }

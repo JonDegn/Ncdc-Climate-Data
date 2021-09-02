@@ -1,28 +1,26 @@
-using NoaaNcdcClient;
 using NUnit.Framework;
-using NoaaNcdcClient.Models;
 using System;
 using Shouldly;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
-using NoaaNcdcClient.Requests;
+using JonDegn.ClimateData;
 using Microsoft.Extensions.Logging;
 
-namespace NoaaNcdcClientTests
+namespace JonDegn.ClimateDataTests
 {
-    public class HistoricalWeatherClientIntegrationTests
+    public class ClimateDataClientIntegrationTests
     {
         public IConfiguration Configuration { get; set; }
-        public HistoricalWeatherClient Client { get; set; }
+        public ClimateDataClient Client { get; set; }
 
         [SetUp]
         public void Setup()
         {
             Configuration = new ConfigurationBuilder()
-                .AddUserSecrets<HistoricalWeatherClientIntegrationTests>()
+                .AddUserSecrets<ClimateDataClientIntegrationTests>()
                 .Build();
-            var logger = LoggerFactory.Create(b => b.AddConsole()).CreateLogger<HistoricalWeatherClient>();
-            Client = new HistoricalWeatherClient(new System.Net.Http.HttpClient(), Configuration["NCDC:Token"], Configuration["NCDC:UserAgent"], logger);
+            var logger = LoggerFactory.Create(b => b.AddConsole()).CreateLogger<ClimateDataClient>();
+            Client = new ClimateDataClient(new System.Net.Http.HttpClient(), Configuration["NCDC:Token"], Configuration["NCDC:UserAgent"], logger);
         }
 
         [Test]
@@ -285,10 +283,7 @@ namespace NoaaNcdcClientTests
         [Test]
         public void TestGetData()
         {
-            var dataRequest = new DataRequest()
-                .WithDatasets("GHCND")
-                .WithStartDate(new DateTime(1908, 5, 1))
-                .WithEndDate(new DateTime(1908, 5, 2))
+            var dataRequest = new DataRequest("GHCND", new DateTime(1908, 5, 1), new DateTime(1908, 5, 2))
                 .WithIncludeMetadata(false)
                 .WithStations("GHCND:USC00425837")
                 .WithLimit(1);
